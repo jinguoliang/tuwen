@@ -3,9 +3,7 @@ package com.jone.jinux.tuwen;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
@@ -15,9 +13,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListPopupWindow;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.jone.jinux.tuwen.databinding.ActivityMainBinding;
-
-import java.io.FileNotFoundException;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -48,11 +48,11 @@ public class MainActivity extends AppCompatActivity {
     public void onShareClick(View view) {
         final View v = findViewById(R.id.bg);
 
-        rx.Observable.create(new rx.Observable.OnSubscribe<String>(){
+        rx.Observable.create(new rx.Observable.OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                Utils.log("onSubscribe : "+ Thread.currentThread().getName());
+                Utils.log("onSubscribe : " + Thread.currentThread().getName());
                 Bitmap bitmap = v.getDrawingCache();
                 if (bitmap == null) {
                     subscriber.onError(null);
@@ -64,26 +64,26 @@ public class MainActivity extends AppCompatActivity {
                 subscriber.onCompleted();
             }
         })
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Subscriber<String>() {
-            @Override
-            public void onCompleted() {
-                Utils.toast("save successfully");
-            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+                        Utils.toast("save successfully");
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                Utils.toast("can't get the view cache");
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        Utils.toast("can't get the view cache");
+                    }
 
-            @Override
-            public void onNext(String s) {
-                Utils.log("onNext : "+ Thread.currentThread().getName());
-                v.destroyDrawingCache();
-                Utils.log("url = " + s);
-            }
-        });
+                    @Override
+                    public void onNext(String s) {
+                        Utils.log("onNext : " + Thread.currentThread().getName());
+                        v.destroyDrawingCache();
+                        Utils.log("url = " + s);
+                    }
+                });
     }
 
     private String saveBitmap(Bitmap bitmap) {
@@ -153,13 +153,17 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_GET_PIC) {
             if (resultCode == RESULT_OK) {
-                try {
-                    Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(data.getData()));
-                    findViewById(R.id.bg).setBackgroundDrawable(new BitmapDrawable(getResources(), bitmap));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    Utils.toast("Open Picture failed");
-                }
+                Glide.with(MainActivity.this)
+                        .load(data.getDataString())
+                        .error(R.mipmap.ic_launcher)
+                        .placeholder(R.mipmap.ic_launcher)
+                        .skipMemoryCache(false)
+                        .into(new SimpleTarget<GlideDrawable>() {
+                            @Override
+                            public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                                findViewById(R.id.bg).setBackgroundDrawable(resource);
+                            }
+                        });
             } else {
                 Utils.toast("Not selected");
             }

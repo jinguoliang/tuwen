@@ -2,15 +2,16 @@ package com.jone.jinux.tuwen;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.polites.android.GestureImageView;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -44,7 +45,8 @@ public class PicturePreviewActivity extends Activity {
             try {
                 Class<PictureLoader> clazz = (Class<PictureLoader>) Class.forName(loadPicMethod);
                 mPicLoader = clazz.getDeclaredConstructor().newInstance();
-                mPicLoader.load("http://gank.io/api/data/%E7%A6%8F%E5%88%A9/10/1", new PictureLoader.OnResult<List<String>>() {
+                String baseUrl = "http://gank.io/api/data/%E7%A6%8F%E5%88%A9/10/" + Math.round(Math.random() * 20);
+                mPicLoader.load(baseUrl, new PictureLoader.OnResult<List<String>>() {
                     @Override
                     public void onResult(final List<String> result) {
                         mpagers.setAdapter(new PagerAdapter() {
@@ -60,7 +62,8 @@ public class PicturePreviewActivity extends Activity {
 
                             @Override
                             public Object instantiateItem(ViewGroup container, int position) {
-                                ImageView view = new ImageView(getBaseContext());
+                                GestureImageView view = new GestureImageView(getBaseContext());
+                                view.setOnClickListener(new MOnClickListener(result.get(position)));
                                 Glide.with(PicturePreviewActivity.this)
                                         .load(result.get(position))
                                         .error(R.mipmap.ic_launcher)
@@ -94,4 +97,19 @@ public class PicturePreviewActivity extends Activity {
         }
     }
 
+    private class MOnClickListener implements View.OnClickListener {
+        private final String mUrl;
+
+        public MOnClickListener(String s) {
+            mUrl = s;
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent();
+            intent.setData(Uri.parse(mUrl));
+            setResult(RESULT_OK, intent);
+            finish();
+        }
+    }
 }

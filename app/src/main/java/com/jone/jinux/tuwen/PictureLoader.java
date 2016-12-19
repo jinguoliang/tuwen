@@ -1,5 +1,6 @@
 package com.jone.jinux.tuwen;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -20,6 +21,7 @@ public class PictureLoader {
         void onResult(T result);
     }
     public  void load(String s, final OnResult<List<String>> onResult) {
+        Utils.log("request: " + s);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, s, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -36,9 +38,11 @@ public class PictureLoader {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                Utils.toast("errer: " + error.getMessage());
+                Utils.log("errer: " + error + ":code " + error.networkResponse);
             }
         });
+        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 1, 1.0f));
+
         Volley.newRequestQueue(MApplication.getInstance()).add(request);
     }
 
