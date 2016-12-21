@@ -18,6 +18,8 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.jone.jinux.tuwen.R;
 import com.jone.jinux.tuwen.base.Utils;
+import com.jone.jinux.tuwen.report.ReportConstants;
+import com.jone.jinux.tuwen.report.ReportManager;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -57,26 +59,28 @@ public class MainActivity extends AppCompatActivity {
                 subscriber.onCompleted();
             }
         })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<String>() {
-                    @Override
-                    public void onCompleted() {
-                        Utils.toast("save successfully");
-                    }
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+                Utils.toast("save successfully");
+            }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Utils.toast("can't get the view cache");
-                    }
+            @Override
+            public void onError(Throwable e) {
+                Utils.toast("can't get the view cache");
+            }
 
-                    @Override
-                    public void onNext(String s) {
-                        Utils.log("onNext : " + Thread.currentThread().getName());
-                        v.destroyDrawingCache();
-                        Utils.log("url = " + s);
-                    }
-                });
+            @Override
+            public void onNext(String s) {
+                Utils.log("onNext : "+ Thread.currentThread().getName());
+                v.destroyDrawingCache();
+                Utils.log("url = " + s);
+            }
+        });
+
+        reportClick(ReportConstants.ACTION_SHARE_CLICK, null);
     }
 
     private String saveBitmap(Bitmap bitmap) {
@@ -104,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
             colorIndex = 0;
         }
         findViewById(R.id.bg).setBackgroundDrawable(new ColorDrawable(colors[colorIndex]));
+        reportClick(ReportConstants.ACTION_COLOR_CLICK, null);
     }
 
     public void onTuClick(View view) {
@@ -117,10 +122,12 @@ public class MainActivity extends AppCompatActivity {
                     case 0:
                         openPictureOnDevice();
                         popupWindow.dismiss();
+                        reportClick(ReportConstants.ACTION_PICTURE_CLICK, "local");
                         break;
                     case 1:
                         openBeautifulPic();
                         popupWindow.dismiss();
+                        reportClick(ReportConstants.ACTION_PICTURE_CLICK, "network");
                         break;
                     default:
                 }
@@ -163,5 +170,9 @@ public class MainActivity extends AppCompatActivity {
                 Utils.toast("Not selected");
             }
         }
+    }
+
+    private void reportClick(String action, String label) {
+        ReportManager.getInstance().reportEvent(ReportConstants.CATEGORY_MAIN, action, label);
     }
 }

@@ -6,7 +6,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.jone.jinux.tuwen.MApplication;
+import com.jone.jinux.tuwen.App;
 import com.jone.jinux.tuwen.base.Utils;
 
 import org.json.JSONArray;

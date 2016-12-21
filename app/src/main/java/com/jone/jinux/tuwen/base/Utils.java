@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.jone.jinux.tuwen.MApplication;
+import com.jone.jinux.tuwen.App;
 
 import java.io.File;
 
@@ -57,6 +57,6 @@ public class Utils {
     }
 
     public static void toast(String s) {
-        Toast.makeText(MApplication.getInstance(), s, Toast.LENGTH_LONG).show();
+        Toast.makeText(App.getInstance(), s, Toast.LENGTH_LONG).show();
     }
 }

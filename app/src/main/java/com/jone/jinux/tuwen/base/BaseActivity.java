@@ -3,9 +3,7 @@ package com.jone.jinux.tuwen.base;
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-import com.jone.jinux.tuwen.MApplication;
+import com.jone.jinux.tuwen.report.ReportManager;
 import com.umeng.analytics.MobclickAgent;
 
 /**
@@ -21,12 +19,7 @@ public abstract class BaseActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        MobclickAgent.onPageStart(getReportScreenName());
-        MApplication application = (MApplication) getApplication();
-        Tracker mTracker = application.getDefaultTracker();
-        mTracker.setScreenName(getReportScreenName());
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-        MobclickAgent.onResume(this);
+        ReportManager.getInstance().reportScreen(getReportScreenName());
     }
 
     protected abstract String getReportScreenName();
