@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "1049433008826",
+    "project_id": "firebase-toowen"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1049433008826:android:30467a9e7b6badd9",
+        "android_client_info": {
+          "package_name": "com.jone.jinux.tuwen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3ad5spEmlsdG-eUqsdGqOmMkewhAVr_U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-64152187-2"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

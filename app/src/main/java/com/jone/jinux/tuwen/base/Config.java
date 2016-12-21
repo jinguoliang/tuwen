@@ -1,4 +1,4 @@
-package com.jone.jinux.tuwen;
+package com.jone.jinux.tuwen.base;
 
 import android.graphics.Bitmap;
 

@@ -1,4 +1,4 @@
-package com.jone.jinux.tuwen;
+package com.jone.jinux.tuwen.base;
 
 import android.content.Context;
 import android.os.Environment;
@@ -6,6 +6,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.jone.jinux.tuwen.MApplication;
 
 import java.io.File;
 

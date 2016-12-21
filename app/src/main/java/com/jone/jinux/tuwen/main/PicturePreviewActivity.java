@@ -1,17 +1,23 @@
-package com.jone.jinux.tuwen;
+package com.jone.jinux.tuwen.main;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.polites.android.GestureImageView;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.polites.android.GestureImageView;
+import com.jone.jinux.tuwen.R;
+import com.jone.jinux.tuwen.base.Utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -62,14 +68,7 @@ public class PicturePreviewActivity extends Activity {
 
                             @Override
                             public Object instantiateItem(ViewGroup container, int position) {
-                                GestureImageView view = new GestureImageView(getBaseContext());
-                                view.setOnClickListener(new MOnClickListener(result.get(position)));
-                                Glide.with(PicturePreviewActivity.this)
-                                        .load(result.get(position))
-                                        .error(R.mipmap.ic_launcher)
-                                        .placeholder(R.mipmap.ic_launcher)
-                                        .skipMemoryCache(false)
-                                        .into(view);
+                               View view = initView(getBaseContext(),result.get(position));
                                 container.addView(view);
                                 return view;
                             }
@@ -97,19 +96,33 @@ public class PicturePreviewActivity extends Activity {
         }
     }
 
-    private class MOnClickListener implements View.OnClickListener {
-        private final String mUrl;
+    /**
+     * 每一页的显式样式
+     * @param context
+     * @param url
+     * @return
+     */
+    private View initView(Context context, final String url) {
+        ViewGroup root = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.page_picture_preview, null);
 
-        public MOnClickListener(String s) {
-            mUrl = s;
-        }
+        ImageView view = (ImageView) root.findViewById(R.id.picture);
+        Glide.with(PicturePreviewActivity.this)
+                .load(url)
+                .error(R.mipmap.ic_launcher)
+                .placeholder(R.mipmap.ic_launcher)
+                .skipMemoryCache(false)
+                .into(view);
 
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent();
-            intent.setData(Uri.parse(mUrl));
-            setResult(RESULT_OK, intent);
-            finish();
-        }
+        Button ok = (Button)root.findViewById(R.id.ok);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setData(Uri.parse(url));
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
+        return root;
     }
 }

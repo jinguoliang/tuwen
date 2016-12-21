@@ -1,4 +1,4 @@
-package com.jone.jinux.tuwen;
+package com.jone.jinux.tuwen.main;
 
 import android.view.Gravity;
 import android.view.View;

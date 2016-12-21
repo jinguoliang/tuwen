@@ -1,4 +1,4 @@
-package com.jone.jinux.tuwen;
+package com.jone.jinux.tuwen.main;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -6,6 +6,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.jone.jinux.tuwen.MApplication;
+import com.jone.jinux.tuwen.base.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,8 +44,7 @@ public class PictureLoader {
             }
         });
         request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 1, 1.0f));
-
-        Volley.newRequestQueue(MApplication.getInstance()).add(request);
+        Volley.newRequestQueue(App.getInstance()).add(request);
     }
 
     private List<String> processJson(JSONObject response) throws Exception {

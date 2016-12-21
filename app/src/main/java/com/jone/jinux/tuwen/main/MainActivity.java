@@ -1,12 +1,11 @@
-package com.jone.jinux.tuwen;
+package com.jone.jinux.tuwen.main;
 
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,7 +16,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.jone.jinux.tuwen.databinding.ActivityMainBinding;
+import com.jone.jinux.tuwen.R;
+import com.jone.jinux.tuwen.base.Utils;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -27,22 +27,15 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_GET_PIC = 923;
 
-    private ActivityMainBinding mDataBinding;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        mDataBinding.setBgColor(Color.CYAN);
+        setContentView(R.layout.activity_main);
         initEdgeLenth();
     }
 
     private void initEdgeLenth() {
         View v = findViewById(R.id.bg);
-        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) v.getLayoutParams();
-        params.width = Utils.getScreenWidth(this);
-        params.width = params.height;
-        v.setLayoutParams(params);
     }
 
     public void onShareClick(View view) {
@@ -110,11 +103,11 @@ public class MainActivity extends AppCompatActivity {
         if (colorIndex == colors.length) {
             colorIndex = 0;
         }
-        mDataBinding.setBgColor(colors[colorIndex]);
+        findViewById(R.id.bg).setBackgroundDrawable(new ColorDrawable(colors[colorIndex]));
     }
 
     public void onTuClick(View view) {
-        ListPopupWindow popupWindow = new ListPopupWindow(this);
+        final ListPopupWindow popupWindow = new ListPopupWindow(this);
         popupWindow.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
                 new String[]{"本地", "网络"}));
         popupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -123,9 +116,11 @@ public class MainActivity extends AppCompatActivity {
                 switch (position) {
                     case 0:
                         openPictureOnDevice();
+                        popupWindow.dismiss();
                         break;
                     case 1:
                         openBeautifulPic();
+                        popupWindow.dismiss();
                         break;
                     default:
                 }
@@ -154,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_GET_PIC) {
             if (resultCode == RESULT_OK) {
                 Glide.with(MainActivity.this)
-                        .load(data.getDataString())
+                        .load(data.getData())
                         .error(R.mipmap.ic_launcher)
                         .placeholder(R.mipmap.ic_launcher)
                         .skipMemoryCache(false)

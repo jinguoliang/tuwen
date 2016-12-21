@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
-    <data >
-        <variable
-            name="bgColor"
-            type="int"/>
-        <variable
-            name="text"
-            type="String"/>
-        <variable
-            name="config"
-            type="com.jone.jinux.tuwen.Config"/>
-    </data>
     <android.support.constraint.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.jone.jinux.tuwen.MainActivity"
+        tools:context="com.jone.jinux.tuwen.main.MainActivity"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         >
 
         <Button
@@ -60,7 +49,7 @@
             app:layout_constraintLeft_toRightOf="@+id/button2"
             app:layout_constraintRight_toRightOf="parent"/>
 
-        <com.jone.jinux.tuwen.JOneCanvas
+       <com.jone.jinux.tuwen.main.JOneCanvas
             android:id="@+id/bg"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -70,13 +59,11 @@
             android:layout_marginRight="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            app:backgroundColor="@{bgColor}"
             app:layout_constraintBottom_toTopOf="@+id/button2"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0">
 
-        </com.jone.jinux.tuwen.JOneCanvas>
+        </com.jone.jinux.tuwen.main.JOneCanvas>
     </android.support.constraint.ConstraintLayout>
-</layout>

@@ -1,4 +1,4 @@
-package com.jone.jinux.tuwen;
+package com.jone.jinux.tuwen.main;
 
 import android.content.Context;
 import android.support.v4.widget.ViewDragHelper;
