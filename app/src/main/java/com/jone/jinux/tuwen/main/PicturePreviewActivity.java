@@ -11,11 +11,13 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.polites.android.GestureImageView;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.jone.jinux.tuwen.R;
 import com.jone.jinux.tuwen.base.Utils;
 
@@ -103,15 +105,21 @@ public class PicturePreviewActivity extends Activity {
      * @return
      */
     private View initView(Context context, final String url) {
-        ViewGroup root = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.page_picture_preview, null);
+        final ViewGroup root = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.page_picture_preview, null);
 
-        ImageView view = (ImageView) root.findViewById(R.id.picture);
+
         Glide.with(PicturePreviewActivity.this)
                 .load(url)
                 .error(R.mipmap.ic_launcher)
                 .placeholder(R.mipmap.ic_launcher)
                 .skipMemoryCache(false)
-                .into(view);
+                .into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        ImageView view = (ImageView) root.findViewById(R.id.picture);
+                        view.setImageDrawable(resource);
+                    }
+                });
 
         Button ok = (Button)root.findViewById(R.id.ok);
         ok.setOnClickListener(new View.OnClickListener() {
