@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,6 +16,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.jone.jinux.tuwen.R;
+import com.jone.jinux.tuwen.base.BaseActivity;
 import com.jone.jinux.tuwen.base.Utils;
 import com.jone.jinux.tuwen.report.ReportConstants;
 import com.jone.jinux.tuwen.report.ReportManager;
@@ -25,7 +25,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private static final int REQUEST_GET_PIC = 923;
 
@@ -34,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initEdgeLenth();
+    }
+
+    @Override
+    protected String getReportScreenName() {
+        return ReportConstants.SCREEN_MAIN;
     }
 
     private void initEdgeLenth() {

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.jone.jinux.tuwen.report.ReportManager;
-import com.umeng.analytics.MobclickAgent;
 
 /**
  * Created by jinux on 16-12-19.
@@ -27,7 +26,6 @@ public abstract class BaseActivity extends Activity {
     @Override
     public void onPause() {
         super.onPause();
-        MobclickAgent.onPageEnd(getReportScreenName());
-        MobclickAgent.onPause(this);
+        ReportManager.getInstance().reportScreenEnd(getReportScreenName());
     }
 }

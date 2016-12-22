@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import com.jone.jinux.tuwen.base.PermissionHelper;
 import com.jone.jinux.tuwen.R;
 import com.jone.jinux.tuwen.base.BaseActivity;
+import com.jone.jinux.tuwen.report.ReportConstants;
 
 import net.youmi.android.AdManager;
 import net.youmi.android.normal.common.ErrorCode;
@@ -73,7 +74,7 @@ public class SplashActivity extends BaseActivity {
 
     @Override
     protected String getReportScreenName() {
-        return "闪屏";
+        return ReportConstants.SCREEN_SPLASH;
     }
 
     @Override

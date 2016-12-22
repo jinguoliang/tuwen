@@ -1,6 +1,5 @@
 package com.jone.jinux.tuwen.main;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,7 +18,9 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.jone.jinux.tuwen.R;
+import com.jone.jinux.tuwen.base.BaseActivity;
 import com.jone.jinux.tuwen.base.Utils;
+import com.jone.jinux.tuwen.report.ReportConstants;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.List;
 /**
  * Created by Jinux on 16/12/15.
  */
-public class PicturePreviewActivity extends Activity {
+public class PicturePreviewActivity extends BaseActivity {
     public static final String LOAD_PIC_MEDTHOD = "load_pic_method";
 
     PictureLoader mPicLoader;
@@ -96,6 +97,11 @@ public class PicturePreviewActivity extends Activity {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    protected String getReportScreenName() {
+        return ReportConstants.SCREEN_PICTURE_PREVIEW;
     }
 
     /**
