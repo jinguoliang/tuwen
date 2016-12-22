@@ -2,6 +2,7 @@ package com.jone.jinux.tuwen;
 
 import android.app.Application;
 
+import com.jone.jinux.tuwen.report.CrashHandler;
 import com.umeng.analytics.MobclickAgent;
 
 /**
@@ -17,6 +18,8 @@ public class App extends Application {
         sInstance = this;
 
         MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
+
+        CrashHandler.getInstance().init(App.getInstance());
     }
 
     public static App getInstance() {

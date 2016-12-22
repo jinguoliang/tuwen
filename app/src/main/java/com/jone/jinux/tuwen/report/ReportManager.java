@@ -81,4 +81,19 @@ public class ReportManager {
         MobclickAgent.onPageEnd(name);
         MobclickAgent.onPause(mContext);
     }
+
+    public void reportCrash(Throwable ex) {
+        StringBuilder  builder = new StringBuilder();
+        builder.append("msg:" + ex.getMessage());
+        for (StackTraceElement e : ex.getStackTrace()) {
+            builder.append("==");
+            builder.append(e.getFileName() + ":" + e.getLineNumber() + "#");
+            builder.append(e.getClassName() + "->" + e.getMethodName());
+            builder.append("==");
+        }
+        mTracker.send(new HitBuilders.ExceptionBuilder().setNonInteraction(true)
+                            .setFatal(true)
+                            .setDescription(builder.toString())
+                            .build());
+    }
 }
