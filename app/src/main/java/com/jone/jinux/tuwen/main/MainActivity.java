@@ -1,12 +1,16 @@
 package com.jone.jinux.tuwen.main;
 
+import android.app.WallpaperManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListPopupWindow;
@@ -21,6 +25,8 @@ import com.jone.jinux.tuwen.base.Utils;
 import com.jone.jinux.tuwen.report.ReportConstants;
 import com.jone.jinux.tuwen.report.ReportManager;
 
+import java.io.IOException;
+
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -28,6 +34,13 @@ import rx.schedulers.Schedulers;
 public class MainActivity extends BaseActivity {
 
     private static final int REQUEST_GET_PIC = 923;
+    int colorIndex = 0;
+    private int[] colors = new int[]{
+            Color.BLUE,
+            Color.RED,
+            Color.GREEN,
+            Color.CYAN,
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +59,57 @@ public class MainActivity extends BaseActivity {
     }
 
     public void onShareClick(View view) {
-        final View v = findViewById(R.id.bg);
+        // 获取bitmap
+        ViewGroup v = (ViewGroup) findViewById(R.id.bg);
+        final Bitmap bitmap = v.getDrawingCache();
 
+        final ListPopupWindow popupWindow = new ListPopupWindow(this);
+        popupWindow.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+                new String[]{"分享", "用作桌面", "用作屏保", "只保存"}));
+        popupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        share(bitmap);
+                        popupWindow.dismiss();
+                        reportClick(ReportConstants.ACTION_SHARE_CLICK, "share");
+                        break;
+                    case 1:
+                        setToDesktop(bitmap);
+                        popupWindow.dismiss();
+                        reportClick(ReportConstants.ACTION_SHARE_CLICK, "desktop");
+                        break;
+                    case 2:
+                        setToLockScreen(bitmap);
+                        popupWindow.dismiss();
+                        reportClick(ReportConstants.ACTION_SHARE_CLICK, "lockscreen");
+                        break;
+                    case 3:
+                        save(bitmap, null);
+                        popupWindow.dismiss();
+                        reportClick(ReportConstants.ACTION_SHARE_CLICK, "desktop");
+                        break;
+                    default:
+                }
+            }
+        });
+        popupWindow.setAnchorView(view);
+        popupWindow.show();
+
+        reportClick(ReportConstants.ACTION_SHARE_CLICK, null);
+    }
+
+    interface OnSavedCallback {
+        void onSaved(String uri);
+    }
+
+    private void save(final Bitmap bitmap, final OnSavedCallback callback) {
         rx.Observable.create(new rx.Observable.OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 Utils.log("onSubscribe : " + Thread.currentThread().getName());
-                Bitmap bitmap = v.getDrawingCache();
                 if (bitmap == null) {
                     subscriber.onError(null);
                     return;
@@ -64,48 +120,82 @@ public class MainActivity extends BaseActivity {
                 subscriber.onCompleted();
             }
         })
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Subscriber<String>() {
-            @Override
-            public void onCompleted() {
-                Utils.toast("save successfully");
-            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+                        Utils.toast("save successfully");
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                Utils.toast("can't get the view cache");
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        Utils.toast("can't get the view cache");
+                    }
 
+                    @Override
+                    public void onNext(String s) {
+                        Utils.log("url = " + s);
+                        if (callback != null) {
+                            callback.onSaved(s);
+                        }
+                    }
+                });
+    }
+
+    private void setToLockScreen(Bitmap bitmap) {
+            WallpaperManager mWallManager = WallpaperManager.getInstance(this);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                mWallManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setToDesktop(Bitmap bitmap) {
+        WallpaperManager manager = WallpaperManager.getInstance(this);
+        try {
+            manager.setBitmap(bitmap);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Utils.toast("设置壁纸失败");
+        }
+    }
+
+    private void share(Bitmap bitmap) {
+        // 先保存
+        save(bitmap, new OnSavedCallback() {
             @Override
-            public void onNext(String s) {
-                Utils.log("onNext : "+ Thread.currentThread().getName());
-                v.destroyDrawingCache();
-                Utils.log("url = " + s);
+            public void onSaved(String uri) {
+                // 保存完分享
+                Intent intent=new Intent(Intent.ACTION_SEND);
+                intent.setType("image/*");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "TuWen's Picture");
+                intent.putExtra(Intent.EXTRA_TEXT, "wa just test");
+                intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(uri));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(Intent.createChooser(intent, getTitle()));
             }
         });
-
-        reportClick(ReportConstants.ACTION_SHARE_CLICK, null);
     }
 
-    private String saveBitmap(Bitmap bitmap) {
-        String path = Utils.getSavePath(Utils.getNewName());
+    private String saveBitmap(final Bitmap bitmap) {
+        final String path = Utils.getSavePath(Utils.getNewName());
         Utils.log("new file name = " + path);
+//
+//        OutputStream out = null;
+//        try {
+//            out = new BufferedOutputStream(new FileOutputStream(new File(path)));
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
 
-        String url = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap,
-                getString(R.string.app_name),
-                getString(R.string.app_name) + " created");
-
-        return url;
+        String uri = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Tuwen", "tuwen's work");
+        return uri;
     }
-
-    private int[] colors = new int[]{
-            Color.BLUE,
-            Color.RED,
-            Color.GREEN,
-            Color.CYAN,
-    };
-    int colorIndex = 0;
 
     public void onSeClick(View view) {
         colorIndex++;
