@@ -1,6 +1,7 @@
 package com.jone.jinux.tuwen.main;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -21,6 +22,7 @@ public class JOneCanvas extends FrameLayout {
     private ViewDragHelper mDragHelper;
 
     private LinkedList<DecorComponent> mDecors = new LinkedList<>();
+    private ImageView mPic;
 
     public JOneCanvas(Context context) {
         super(context);
@@ -48,12 +50,29 @@ public class JOneCanvas extends FrameLayout {
 
             @Override
             public int clampViewPositionHorizontal(View child, int left, int dx) {
+                if (left <= 0) {
+                    return 0;
+                }
+
+                int right = getWidth() - child.getWidth();
+                if (left >= right) {
+                    return right;
+                }
 
                 return left;
             }
 
             @Override
             public int clampViewPositionVertical(View child, int top, int dy) {
+                if (top <= 0) {
+                    return 0;
+                }
+
+                int bottom = getHeight() - child.getHeight();
+                if (top >= bottom) {
+                    return bottom;
+                }
+
                 return top;
             }
         });
@@ -65,8 +84,9 @@ public class JOneCanvas extends FrameLayout {
         setDrawingCacheEnabled(true);
 
         // 图片
-        ImageView pic = new ImageView(context);
-        addView(pic, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        mPic = new ImageView(context);
+        mPic.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        addView(mPic, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         // 装饰
         TextView textView = new TextView(context);
@@ -88,5 +108,9 @@ public class JOneCanvas extends FrameLayout {
     public boolean onTouchEvent(MotionEvent event) {
         mDragHelper.processTouchEvent(event);
         return true;
+    }
+
+    public void setPicture(Drawable drawable) {
+        mPic.setImageDrawable(drawable);
     }
 }

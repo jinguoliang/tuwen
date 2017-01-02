@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListPopupWindow;
 
 import com.bumptech.glide.Glide;
@@ -41,12 +42,15 @@ public class MainActivity extends BaseActivity {
             Color.GREEN,
             Color.CYAN,
     };
+    private JOneCanvas mCanvas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initEdgeLenth();
+
+        mCanvas = (JOneCanvas)findViewById(R.id.bg);
     }
 
     @Override
@@ -55,7 +59,16 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initEdgeLenth() {
-        View v = findViewById(R.id.bg);
+        final View v = findViewById(R.id.bg);
+        v.post(new Runnable() {
+            @Override
+            public void run() {
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) v.getLayoutParams();
+                params.width = v.getWidth();
+                params.height = v.getWidth();
+                v.setLayoutParams(params);
+            }
+        });
     }
 
     public void onShareClick(View view) {
@@ -202,7 +215,7 @@ public class MainActivity extends BaseActivity {
         if (colorIndex == colors.length) {
             colorIndex = 0;
         }
-        findViewById(R.id.bg).setBackgroundDrawable(new ColorDrawable(colors[colorIndex]));
+        mCanvas.setPicture(new ColorDrawable(colors[colorIndex]));
         reportClick(ReportConstants.ACTION_COLOR_CLICK, null);
     }
 
@@ -258,7 +271,7 @@ public class MainActivity extends BaseActivity {
                         .into(new SimpleTarget<GlideDrawable>() {
                             @Override
                             public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                                findViewById(R.id.bg).setBackgroundDrawable(resource);
+                                mCanvas.setPicture(resource);
                             }
                         });
             } else {
