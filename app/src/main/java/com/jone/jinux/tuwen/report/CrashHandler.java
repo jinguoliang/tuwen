@@ -7,6 +7,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
+import com.jone.jinux.tuwen.base.Utils;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -58,6 +60,9 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     public void uncaughtException(Thread thread, Throwable ex) {
         //这里可以通过网络上传异常信息到服务器，便于开发人员分析日志从而解决bug
         uploadExceptionToServer(thread, ex);
+
+        Utils.toast("crash!!!!!!!");
+        Log.e(TAG, Log.getStackTraceString(ex));
     }
 
     private void dumpExceptionToSDCard(Throwable ex) throws IOException {
