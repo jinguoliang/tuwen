@@ -9,36 +9,94 @@
         android:id="@+id/bg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        android:focusable="true"/>
 
-    </com.jone.jinux.tuwen.main.JOneCanvas>
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/controlbar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="16dp"
-        android:onClick="onSeClick"
-        android:text="Color" />
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:onClick="onSeClick"
+            android:text="Color" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:onClick="onTuClick"
-        android:text="Picture" />
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:onClick="onTuClick"
+            android:layout_weight="1"
+            android:text="Picture" />
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_marginBottom="16dp"
-        android:elevation="5dp"
-        android:onClick="onShareClick"
-        android:text="Share" />
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:elevation="5dp"
+            android:layout_weight="1"
+            android:onClick="onShareClick"
+            android:text="Share" />
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/inputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible">
+
+        <LinearLayout
+            android:id="@+id/inputControlbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:background="@android:color/white">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onSeClick"
+                android:text="Left" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:onClick="onTuClick"
+                android:layout_weight="1"
+                android:text="Center" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:elevation="5dp"
+                android:layout_weight="1"
+                android:onClick="onShareClick"
+                android:text="Right" />
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#bb222222"
+            android:layout_above="@id/inputControlbar"
+            android:text="Hello world"
+            android:maxLines="4"
+            android:padding="10dp" />
+    </RelativeLayout>
+
 
 </FrameLayout>

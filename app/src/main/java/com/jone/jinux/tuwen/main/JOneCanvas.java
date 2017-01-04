@@ -11,6 +11,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.jone.jinux.tuwen.R;
+import com.jone.jinux.tuwen.base.Utils;
+
 import java.util.LinkedList;
 
 /**
@@ -23,6 +26,7 @@ public class JOneCanvas extends FrameLayout {
 
     private LinkedList<DecorComponent> mDecors = new LinkedList<>();
     private ImageView mPic;
+    private TextView mTextView;
 
     public JOneCanvas(Context context) {
         super(context);
@@ -41,7 +45,14 @@ public class JOneCanvas extends FrameLayout {
 
     private void init() {
         initView();
-        mDragHelper = ViewDragHelper.create(this, 1.0f, new ViewDragHelper
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestFocus();
+                Utils.hideSoftInput(getRootView().getWindowToken());
+            }
+        });
+        mDragHelper = ViewDragHelper.create(this, new ViewDragHelper
                 .Callback() {
             @Override
             public boolean tryCaptureView(View child, int pointerId) {
@@ -75,6 +86,16 @@ public class JOneCanvas extends FrameLayout {
 
                 return top;
             }
+
+            @Override
+            public int getViewVerticalDragRange(View child) {
+                return getMeasuredHeight() - child.getHeight();  //
+            }
+
+            @Override
+            public int getViewHorizontalDragRange(View child) {
+                return getMeasuredWidth() - child.getWidth();
+            }
         });
     }
 
@@ -89,11 +110,23 @@ public class JOneCanvas extends FrameLayout {
         addView(mPic, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         // 装饰
-        TextView textView = new TextView(context);
-        textView.setText("hello world");
-        textView.setTextSize(20);
+        mTextView = new TextView(context);
+        mTextView.setText("hello world");
+        int padding = getResources().getDimensionPixelSize(R.dimen.text_padding);
+        mTextView.setPadding(padding, padding, padding, padding);
+        mTextView.setTextSize(20);
+        mTextView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mTextView.setVisibility(View.INVISIBLE);
+                if (mInputCallback == null) {
+                    throw new IllegalStateException("you need call setOnInputCallback");
+                }
+                mInputCallback.onInput(v);
+            }
+        });
 
-        mDecors.add(new DecorComponent(textView));
+        mDecors.add(new DecorComponent(mTextView));
         for (DecorComponent component : mDecors) {
             addView(component.view);
         }
@@ -112,5 +145,16 @@ public class JOneCanvas extends FrameLayout {
 
     public void setPicture(Drawable drawable) {
         mPic.setImageDrawable(drawable);
+    }
+
+
+    OnInputCallback mInputCallback;
+
+    public void setOnInputCallback(OnInputCallback onInputCallback) {
+        mInputCallback = onInputCallback;
+    }
+
+    interface OnInputCallback {
+        void onInput(View v);
     }
 }

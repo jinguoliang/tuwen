@@ -9,12 +9,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListPopupWindow;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -43,6 +46,10 @@ public class MainActivity extends BaseActivity {
             Color.CYAN,
     };
     private JOneCanvas mCanvas;
+    private EditText mInput;
+    private View mControlbar;
+    private ViewGroup mInputLayer;
+    private TextView mCanvasText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +57,40 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         initEdgeLenth();
 
-        mCanvas = (JOneCanvas)findViewById(R.id.bg);
+        mCanvas = (JOneCanvas) findViewById(R.id.bg);
+        mCanvas.setOnInputCallback(new JOneCanvas.OnInputCallback() {
+
+            @Override
+            public void onInput(View v) {
+                mInput.requestFocus();
+                mInput.setText(((TextView) v).getText());
+                mInput.setSelection(mInput.getText().length());
+                mControlbar.setVisibility(View.INVISIBLE);
+                mInputLayer.setVisibility(View.VISIBLE);
+                Utils.showSoftInput(mInput);
+                mCanvasText = (TextView) v;
+            }
+        });
+
+        mInputLayer = (ViewGroup) findViewById(R.id.inputLayout);
+        mInput = (EditText) mInputLayer.findViewById(R.id.input);
+        mControlbar = findViewById(R.id.controlbar);
+        mInputLayer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideInputLayer();
+                Utils.hideSoftInput(getWindow().getDecorView().getWindowToken());
+            }
+        });
+    }
+
+    private void hideInputLayer() {
+        mInputLayer.setVisibility(View.INVISIBLE);
+        mControlbar.setVisibility(View.VISIBLE);
+        if (mCanvasText != null) {
+            mCanvasText.setVisibility(View.VISIBLE);
+            mCanvasText.setText(mInput.getText());
+        }
     }
 
     @Override
@@ -113,10 +153,6 @@ public class MainActivity extends BaseActivity {
         reportClick(ReportConstants.ACTION_SHARE_CLICK, null);
     }
 
-    interface OnSavedCallback {
-        void onSaved(String uri);
-    }
-
     private void save(final Bitmap bitmap, final OnSavedCallback callback) {
         rx.Observable.create(new rx.Observable.OnSubscribe<String>() {
 
@@ -157,7 +193,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setToLockScreen(Bitmap bitmap) {
-            WallpaperManager mWallManager = WallpaperManager.getInstance(this);
+        WallpaperManager mWallManager = WallpaperManager.getInstance(this);
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 mWallManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK);
@@ -183,7 +219,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onSaved(String uri) {
                 // 保存完分享
-                Intent intent=new Intent(Intent.ACTION_SEND);
+                Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("image/*");
                 intent.putExtra(Intent.EXTRA_SUBJECT, "TuWen's Picture");
                 intent.putExtra(Intent.EXTRA_TEXT, "wa just test");
@@ -282,5 +318,17 @@ public class MainActivity extends BaseActivity {
 
     private void reportClick(String action, String label) {
         ReportManager.getInstance().reportEvent(ReportConstants.CATEGORY_MAIN, action, label);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && Utils.isShowSoftInput(this)) {
+            hideInputLayer();
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    interface OnSavedCallback {
+        void onSaved(String uri);
     }
 }
